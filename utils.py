@@ -8,10 +8,10 @@ from IPython.display import Image, clear_output
 import warnings
 warnings.filterwarnings('ignore')
 
-def load_image(image_fname: str, correct_shape = True):
+def load_image(image_fname: str, correct_shape = True, save_path = None):
     image = cv2.imread(image_fname, cv2.IMREAD_GRAYSCALE)
     if correct_shape:
-        image = select_points(image)
+        image = select_points(image, save_path)
     return image
 
 def order_points(pts):
@@ -67,13 +67,16 @@ def four_point_transform(image, pts):
     # return the warped image
     return warped
 
-def select_points(image: np.ndarray):
+def select_points(image: np.ndarray, save_path = None):
     plt.imshow(image)
     plt.axis('off')
     plt.title('Select Four Corner Point of the Bounding Square', fontweight ="bold")
     points = plt.ginput(4)
     plt.close()
     corrected_image = four_point_transform(image, np.asarray(points))
+    
+    if isinstance(save_path, str):
+        cv2.imwrite(save_path, corrected_image)
     return corrected_image
 
 def resize(image: np.ndarray, dim = (200, 200)):
