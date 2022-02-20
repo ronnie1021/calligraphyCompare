@@ -84,13 +84,17 @@ def get_color(image: np.ndarray, recolor = True):
     mask = image < 150
     recolored = cv2.merge([image, image, image])
     if recolor:
-        recolored[!mask] = [255, 255, 255]
         recolored[mask] = [255, 0, 0]
     return resize(recolored)
 
 def get_overlay(sample, copy, alpha = 0.3):
-    sample = get_color(sample, recolor = True)
+
     copy = get_color(copy, recolor = False)
-    compared = cv2.addWeighted(sample, alpha, copy, 1 - alpha, 0.0)
+
+    sample = resize(sample)
+    compared = copy.copy()
+    compared[sample < 150] = [255, 0, 0]
+    
+    sample = get_color(sample, recolor = True)
     combined = cv2.hconcat([sample, copy, compared])
     return combined
